@@ -1,0 +1,104 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run Current Package",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${fileDirname}",
+            "env": {
+                "GITHUB_TOKEN": "your_github_token",
+                "GITHUB_OWNER": "your_github_username",
+                "GITHUB_REPO": "your_github_repo",
+                "SOURCES": "HackerNews,RedditGo,RedditPython",
+                "SOURCE_HackerNews_TYPE": "hackernews",
+                "SOURCE_HackerNews_URL": "https://hacker-news.firebaseio.com/v0",
+                "SOURCE_HackerNews_LIMIT": "5",
+                "SOURCE_RedditGo_TYPE": "reddit",
+                "SOURCE_RedditGo_URL": "https://www.reddit.com",
+                "SOURCE_RedditGo_SUBSOURCE": "golang",
+                "SOURCE_RedditGo_LIMIT": "3",
+                "SOURCE_RedditPython_TYPE": "reddit",
+                "SOURCE_RedditPython_URL": "https://www.reddit.com",
+                "SOURCE_RedditPython_SUBSOURCE": "python",
+                "SOURCE_RedditPython_LIMIT": "3"
+            },
+            "args": []
+        },
+        {
+            "name": "Run GitHub Bot",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/ghbot",
+            "env": {
+                "GITHUB_TOKEN": "your_github_token",
+                "GITHUB_OWNER": "your_github_username",
+                "GITHUB_REPO": "your_github_repo",
+                "SOURCES": "HackerNews,RedditGo,RedditPython",
+                "SOURCE_HackerNews_TYPE": "hackernews",
+                "SOURCE_HackerNews_URL": "https://hacker-news.firebaseio.com/v0",
+                "SOURCE_HackerNews_LIMIT": "5",
+                "SOURCE_RedditGo_TYPE": "reddit",
+                "SOURCE_RedditGo_URL": "https://www.reddit.com",
+                "SOURCE_RedditGo_SUBSOURCE": "golang",
+                "SOURCE_RedditGo_LIMIT": "3",
+                "SOURCE_RedditPython_TYPE": "reddit",
+                "SOURCE_RedditPython_URL": "https://www.reddit.com",
+                "SOURCE_RedditPython_SUBSOURCE": "python",
+                "SOURCE_RedditPython_LIMIT": "3"
+            },
+            "args": []
+        },
+        {
+            "name": "Run Markdown Bot",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/mdbot",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "GITHUB_TOKEN": "your_github_token",
+                "GITHUB_OWNER": "your_github_username",
+                "GITHUB_REPO": "your_github_repo",
+                "SOURCES": "HackerNews,RedditGo,RedditPython",
+                "SOURCE_HackerNews_TYPE": "hackernews",
+                "SOURCE_HackerNews_URL": "https://hacker-news.firebaseio.com/v0",
+                "SOURCE_HackerNews_LIMIT": "5",
+                "SOURCE_RedditGo_TYPE": "reddit",
+                "SOURCE_RedditGo_URL": "https://www.reddit.com",
+                "SOURCE_RedditGo_SUBSOURCE": "golang",
+                "SOURCE_RedditGo_LIMIT": "3",
+                "SOURCE_RedditPython_TYPE": "reddit",
+                "SOURCE_RedditPython_URL": "https://www.reddit.com",
+                "SOURCE_RedditPython_SUBSOURCE": "python",
+                "SOURCE_RedditPython_LIMIT": "3"
+            },
+            "args": []
+        },
+        {
+            "name": "Run Tests",
+            "type": "go",
+            "request": "launch",
+            "mode": "test",
+            "program": "${fileDirname}",
+            "env": {
+                "GITHUB_TOKEN": "your_github_token",
+                "GITHUB_OWNER": "your_github_username",
+                "GITHUB_REPO": "your_github_repo",
+                "SOURCES": "HackerNews,RedditGo",
+                "SOURCE_HackerNews_TYPE": "hackernews",
+                "SOURCE_HackerNews_URL": "https://hacker-news.firebaseio.com/v0",
+                "SOURCE_HackerNews_LIMIT": "3",
+                "SOURCE_RedditGo_TYPE": "reddit",
+                "SOURCE_RedditGo_URL": "https://www.reddit.com",
+                "SOURCE_RedditGo_SUBSOURCE": "golang",
+                "SOURCE_RedditGo_LIMIT": "2"
+            },
+            "args": [
+                "-v"
+            ]
+        }
+    ]
+}

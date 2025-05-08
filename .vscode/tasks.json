@@ -1,0 +1,53 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build GitHub Bot",
+            "type": "shell",
+            "command": "go build -o ghbot ./cmd/ghbot",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$go"]
+        },
+        {
+            "label": "Build Markdown Bot",
+            "type": "shell",
+            "command": "go build -o mdbot ./cmd/mdbot",
+            "group": "build",
+            "problemMatcher": ["$go"]
+        },
+        {
+            "label": "Build All",
+            "type": "shell",
+            "command": "go build -o ghbot ./cmd/ghbot && go build -o mdbot ./cmd/mdbot",
+            "group": "build",
+            "problemMatcher": ["$go"]
+        },
+        {
+            "label": "Run GitHub Bot",
+            "type": "shell",
+            "command": "go run ./cmd/ghbot",
+            "group": "none",
+            "problemMatcher": ["$go"]
+        },
+        {
+            "label": "Run Markdown Bot",
+            "type": "shell",
+            "command": "go run ./cmd/mdbot",
+            "group": "none",
+            "problemMatcher": ["$go"]
+        },
+        {
+            "label": "Run Tests",
+            "type": "shell",
+            "command": "go test -v ./...",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": ["$go"]
+        }
+    ]
+}

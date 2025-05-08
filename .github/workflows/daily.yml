@@ -1,0 +1,44 @@
+name: Daily News Digest
+
+on:
+  schedule:
+    # Run daily at 00:00 UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  fetch-news:
+    name: Fetch News, Create Issue and Update Repository
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          check-latest: true
+
+      - name: Build GitHub Bot
+        run: go build -o ghbot ./cmd/ghbot
+
+      - name: Run GitHub Bot
+        env:
+          GITHUB_TOKEN: ${{ secrets.GOSSIP_GITHUB_TOKEN }}
+          GITHUB_OWNER: ${{ github.repository_owner }}
+          GITHUB_REPO: ${{ github.event.repository.name }}
+          SOURCES: "HackerNews,RedditGo,RedditPython"
+          SOURCE_HackerNews_TYPE: "hackernews"
+          SOURCE_HackerNews_URL: "https://hacker-news.firebaseio.com/v0"
+          SOURCE_HackerNews_LIMIT: "10"
+          SOURCE_RedditGo_TYPE: "reddit"
+          SOURCE_RedditGo_URL: "https://www.reddit.com"
+          SOURCE_RedditGo_SUBSOURCE: "golang"
+          SOURCE_RedditGo_LIMIT: "10"
+          SOURCE_RedditPython_TYPE: "reddit"
+          SOURCE_RedditPython_URL: "https://www.reddit.com"
+          SOURCE_RedditPython_SUBSOURCE: "python"
+          SOURCE_RedditPython_LIMIT: "10"
+        run: ./ghbot
