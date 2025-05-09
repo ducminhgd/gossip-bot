@@ -26,7 +26,7 @@ func (r *HackerNewsRepository) FetchTopStories(source models.Source) ([]models.N
 	// Hacker News API uses Firebase API
 	// The base URL should be https://hacker-news.firebaseio.com/v0
 	// But the actual website is https://news.ycombinator.com/
-	
+
 	// Fetch top stories IDs
 	topStoriesURL := "https://hacker-news.firebaseio.com/v0/topstories.json"
 	var storyIDs []int
@@ -41,12 +41,22 @@ func (r *HackerNewsRepository) FetchTopStories(source models.Source) ([]models.N
 
 	// Fetch each story
 	var newsList []models.News
+	var skippedStories []int
+
 	for _, id := range storyIDs {
 		story, err := r.fetchStory(id)
 		if err != nil {
-			return nil, err
+			// Log warning and continue with other stories
+			fmt.Printf("WARNING: failed to fetch Hacker News story %d: %v\n", id, err)
+			skippedStories = append(skippedStories, id)
+			continue
 		}
 		newsList = append(newsList, story)
+	}
+
+	// If all stories were skipped, return an error
+	if len(newsList) == 0 && len(skippedStories) > 0 {
+		return nil, fmt.Errorf("failed to fetch any Hacker News top stories, skipped: %v", skippedStories)
 	}
 
 	// Sort by score
@@ -73,12 +83,22 @@ func (r *HackerNewsRepository) FetchBestStories(source models.Source) ([]models.
 
 	// Fetch each story
 	var newsList []models.News
+	var skippedStories []int
+
 	for _, id := range storyIDs {
 		story, err := r.fetchStory(id)
 		if err != nil {
-			return nil, err
+			// Log warning and continue with other stories
+			fmt.Printf("WARNING: failed to fetch Hacker News story %d: %v\n", id, err)
+			skippedStories = append(skippedStories, id)
+			continue
 		}
 		newsList = append(newsList, story)
+	}
+
+	// If all stories were skipped, return an error
+	if len(newsList) == 0 && len(skippedStories) > 0 {
+		return nil, fmt.Errorf("failed to fetch any Hacker News best stories, skipped: %v", skippedStories)
 	}
 
 	// Sort by score
@@ -92,7 +112,7 @@ func (r *HackerNewsRepository) FetchBestStories(source models.Source) ([]models.
 // fetchStory fetches a single story from Hacker News
 func (r *HackerNewsRepository) fetchStory(id int) (models.News, error) {
 	storyURL := fmt.Sprintf("https://hacker-news.firebaseio.com/v0/item/%d.json", id)
-	var story map[string]interface{}
+	var story map[string]any
 	if err := r.httpClient.GetJSON(storyURL, &story); err != nil {
 		return models.News{}, fmt.Errorf("failed to fetch story %d: %w", id, err)
 	}

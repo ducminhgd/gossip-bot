@@ -27,15 +27,25 @@ func NewNewsService(sources []models.Source) *NewsService {
 }
 
 // FetchAllNews fetches news from all sources
+// If a source can't be crawled, it will be skipped and a warning will be logged
 func (s *NewsService) FetchAllNews() (map[string][]models.News, error) {
 	result := make(map[string][]models.News)
+	var skippedSources []string
 
 	for _, source := range s.sources {
 		news, err := s.FetchNewsBySource(source)
 		if err != nil {
-			return nil, fmt.Errorf("failed to fetch news from %s: %w", source.Name, err)
+			// Log warning and continue with other sources
+			fmt.Printf("WARNING: failed to fetch news from %s: %v\n", source.Name, err)
+			skippedSources = append(skippedSources, source.Name)
+			continue
 		}
 		result[source.Name] = news
+	}
+
+	// If all sources were skipped, return an error
+	if len(result) == 0 && len(skippedSources) > 0 {
+		return nil, fmt.Errorf("failed to fetch news from any source, skipped: %v", skippedSources)
 	}
 
 	return result, nil
@@ -69,11 +79,16 @@ func (s *NewsService) fetchHackerNews(source models.Source) ([]models.News, erro
 
 	// Fetch each story
 	var newsList []models.News
+	var skippedStories []int
+
 	for _, id := range storyIDs {
 		storyURL := fmt.Sprintf("https://hacker-news.firebaseio.com/v0/item/%d.json", id)
-		var story map[string]interface{}
+		var story map[string]any
 		if err := s.httpClient.GetJSON(storyURL, &story); err != nil {
-			return nil, fmt.Errorf("failed to fetch story %d: %w", id, err)
+			// Log warning and continue with other stories
+			fmt.Printf("WARNING: failed to fetch Hacker News story %d: %v\n", id, err)
+			skippedStories = append(skippedStories, id)
+			continue
 		}
 
 		// Extract story details
@@ -101,6 +116,11 @@ func (s *NewsService) fetchHackerNews(source models.Source) ([]models.News, erro
 		newsList = append(newsList, news)
 	}
 
+	// If all stories were skipped, return an error
+	if len(newsList) == 0 && len(skippedStories) > 0 {
+		return nil, fmt.Errorf("failed to fetch any Hacker News stories, skipped: %v", skippedStories)
+	}
+
 	// Sort by score
 	sort.Slice(newsList, func(i, j int) bool {
 		return newsList[i].Score > newsList[j].Score
@@ -118,7 +138,7 @@ func (s *NewsService) fetchReddit(source models.Source) ([]models.News, error) {
 	}
 
 	redditURL := fmt.Sprintf("%s/r/%s/hot.json?limit=%d", source.URL, url.PathEscape(subreddit), source.Limit)
-	
+
 	// Fetch data
 	body, err := s.httpClient.Get(redditURL)
 	if err != nil {
@@ -148,11 +168,20 @@ func (s *NewsService) fetchReddit(source models.Source) ([]models.News, error) {
 
 	// Extract posts
 	var newsList []models.News
+	var skippedPosts []string
+
 	for _, child := range response.Data.Children {
 		post := child.Data
-		
+
 		// Skip stickied posts or announcements
 		if strings.HasPrefix(strings.ToLower(post.Title), "[announcement]") {
+			continue
+		}
+
+		// Skip posts with empty titles (shouldn't happen, but just in case)
+		if post.Title == "" {
+			fmt.Printf("WARNING: skipping Reddit post with empty title in r/%s\n", subreddit)
+			skippedPosts = append(skippedPosts, "unknown post")
 			continue
 		}
 
@@ -184,6 +213,11 @@ func (s *NewsService) fetchReddit(source models.Source) ([]models.News, error) {
 		}
 
 		newsList = append(newsList, news)
+	}
+
+	// If all posts were skipped, return an error
+	if len(newsList) == 0 && len(skippedPosts) > 0 {
+		return nil, fmt.Errorf("failed to fetch any Reddit posts from r/%s, skipped: %v", subreddit, skippedPosts)
 	}
 
 	// Sort by score
