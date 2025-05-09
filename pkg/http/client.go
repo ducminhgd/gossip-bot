@@ -4,9 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math/rand"
 	"net/http"
 	"time"
 )
+
+// We'll use a package-level random source for jitter calculations
+// As of Go 1.20, there's no need to seed the global rand source
+var rnd = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 // Client is a wrapper around http.Client
 type Client struct {
@@ -17,30 +22,61 @@ type Client struct {
 func NewClient() *Client {
 	return &Client{
 		client: &http.Client{
-			Timeout: 10 * time.Second,
+			Timeout: 15 * time.Second, // Increased timeout
 		},
 	}
 }
 
 // Get performs a GET request to the specified URL
 func (c *Client) Get(url string) ([]byte, error) {
+	// Create request
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 
-	req.Header.Set("User-Agent", "GossipBot/1.0")
+	// Set a more detailed User-Agent to avoid being blocked by Reddit
+	// Reddit requires a good User-Agent header: https://github.com/reddit-archive/reddit/wiki/API
+	req.Header.Set("User-Agent", "GossipBot/1.0 (https://github.com/ducminhgd/gossip-bot; contact@example.com)")
 
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to perform request: %w", err)
+	// Add Accept header
+	req.Header.Set("Accept", "application/json")
+
+	// Perform request with retry logic
+	var resp *http.Response
+	var lastErr error
+	maxRetries := 3
+
+	for i := range maxRetries {
+		// Add a small delay between retries with some jitter
+		if i > 0 {
+			delay := time.Duration(500+rnd.Intn(500)) * time.Millisecond
+			time.Sleep(delay)
+		}
+
+		resp, err = c.client.Do(req)
+		if err != nil {
+			lastErr = fmt.Errorf("failed to perform request (attempt %d/%d): %w", i+1, maxRetries, err)
+			continue
+		}
+
+		// If we got a response, break out of the retry loop
+		break
 	}
+
+	// If all retries failed, return the last error
+	if resp == nil {
+		return nil, lastErr
+	}
+
 	defer resp.Body.Close()
 
+	// Check status code
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
+	// Read response body
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read response body: %w", err)
@@ -50,7 +86,7 @@ func (c *Client) Get(url string) ([]byte, error) {
 }
 
 // GetJSON performs a GET request to the specified URL and unmarshals the response into v
-func (c *Client) GetJSON(url string, v interface{}) error {
+func (c *Client) GetJSON(url string, v any) error {
 	body, err := c.Get(url)
 	if err != nil {
 		return err
