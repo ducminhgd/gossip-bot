@@ -8,14 +8,12 @@ import (
 	"time"
 
 	"github.com/ducminhgd/gossip-bot/internal/models"
-	"github.com/ducminhgd/gossip-bot/pkg/http"
 )
 
 // MockHTTPClient is a mock implementation of the HTTP client for testing
 type MockHTTPClient struct {
 	GetJSONFunc func(url string, v any) error
 	GetFunc     func(url string) ([]byte, error)
-	client      *http.Client
 }
 
 // Get is a mock implementation of the Get method

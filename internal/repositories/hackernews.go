@@ -11,7 +11,7 @@ import (
 
 // HackerNewsRepository handles fetching news from Hacker News
 type HackerNewsRepository struct {
-	httpClient *http.Client
+	httpClient http.HTTPClient
 }
 
 // NewHackerNewsRepository creates a new HackerNewsRepository

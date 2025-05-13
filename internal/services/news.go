@@ -14,7 +14,7 @@ import (
 
 // NewsService handles operations related to news
 type NewsService struct {
-	httpClient *http.Client
+	httpClient http.HTTPClient
 	sources    []models.Source
 }
 
