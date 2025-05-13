@@ -43,90 +43,46 @@ jobs:
 
       - name: Generate Markdown summary
         run: |
+          # Basic summary header
           echo "# Test Results Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Coverage summary
           echo "## Coverage Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          go tool cover -func=coverage.out >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
 
-          # Calculate total coverage percentage
-          COVERAGE=$(go tool cover -func=coverage.out | grep total: | awk '{print $3}')
+          # Get coverage data
+          go tool cover -func=coverage.out > coverage_summary.txt
+
+          # Add coverage data as code block
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat coverage_summary.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Extract total coverage
+          TOTAL_LINE=$(grep "total:" coverage_summary.txt || echo "total: (statements) 0.0%")
+          COVERAGE=$(echo "$TOTAL_LINE" | awk '{print $3}')
           echo "**Total Coverage: $COVERAGE**" >> $GITHUB_STEP_SUMMARY
-
-          # Add packages with lowest coverage
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Packages with Lowest Coverage" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Package | Function | Coverage |" >> $GITHUB_STEP_SUMMARY
-          echo "|---------|----------|----------|" >> $GITHUB_STEP_SUMMARY
 
-          # Get the 5 functions with the lowest coverage (excluding 0.0% which are often main functions)
-          go tool cover -func=coverage.out | grep -v "0.0%" | sort -k 3 -n | head -5 | while read -r line; do
-            PACKAGE=$(echo $line | awk '{print $1}')
-            FUNCTION=$(echo $line | awk '{print $2}')
-            COV=$(echo $line | awk '{print $3}')
-            echo "| $PACKAGE | $FUNCTION | $COV |" >> $GITHUB_STEP_SUMMARY
-          done
-
-          # Also list functions with 0% coverage
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Functions with No Coverage (0.0%)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Package | Function |" >> $GITHUB_STEP_SUMMARY
-          echo "|---------|----------|" >> $GITHUB_STEP_SUMMARY
-
-          go tool cover -func=coverage.out | grep "0.0%" | while read -r line; do
-            PACKAGE=$(echo $line | awk '{print $1}')
-            FUNCTION=$(echo $line | awk '{print $2}')
-            echo "| $PACKAGE | $FUNCTION |" >> $GITHUB_STEP_SUMMARY
-          done
-
-          # Add test results summary
-          echo "" >> $GITHUB_STEP_SUMMARY
+          # Test results summary
           echo "## Test Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          # Parse the JSON test output to get pass/fail counts
-          PASSED=$(cat test-report.json | grep -c '"Action":"pass"')
-          FAILED=$(cat test-report.json | grep -c '"Action":"fail"')
-          SKIPPED=$(cat test-report.json | grep -c '"Action":"skip"')
+          # Count test results
+          PASSED=$(grep -c '"Action":"pass"' test-report.json || echo 0)
+          FAILED=$(grep -c '"Action":"fail"' test-report.json || echo 0)
+          SKIPPED=$(grep -c '"Action":"skip"' test-report.json || echo 0)
           TOTAL=$((PASSED + FAILED + SKIPPED))
 
+          # Create test results table
           echo "| Status | Count |" >> $GITHUB_STEP_SUMMARY
           echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
           echo "| ✅ Passed | $PASSED |" >> $GITHUB_STEP_SUMMARY
           echo "| ❌ Failed | $FAILED |" >> $GITHUB_STEP_SUMMARY
           echo "| ⏭️ Skipped | $SKIPPED |" >> $GITHUB_STEP_SUMMARY
           echo "| **Total** | **$TOTAL** |" >> $GITHUB_STEP_SUMMARY
-
-          # Add failed tests if any
-          if [ "$FAILED" -gt "0" ]; then
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "### Failed Tests" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "| Package | Test | Output |" >> $GITHUB_STEP_SUMMARY
-            echo "|---------|------|--------|" >> $GITHUB_STEP_SUMMARY
-
-            # Extract failed tests from the JSON output
-            cat test-report.json | grep -B 5 -A 5 '"Action":"fail"' | grep -E '"Package"|"Test"|"Output"|"Action":"fail"' >> failed_tests.txt
-
-            # Process the failed tests to create a markdown table
-            while IFS= read -r line; do
-              if [[ $line == *'"Package"'* ]]; then
-                PACKAGE=$(echo $line | sed 's/.*"Package":"\([^"]*\)".*/\1/')
-              elif [[ $line == *'"Test"'* ]]; then
-                TEST=$(echo $line | sed 's/.*"Test":"\([^"]*\)".*/\1/')
-              elif [[ $line == *'"Output"'* ]]; then
-                OUTPUT=$(echo $line | sed 's/.*"Output":"\([^"]*\)".*/\1/' | tr -d '\n')
-                echo "| $PACKAGE | $TEST | $OUTPUT |" >> $GITHUB_STEP_SUMMARY
-              fi
-            done < failed_tests.txt
-
-            rm failed_tests.txt
-          fi
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
