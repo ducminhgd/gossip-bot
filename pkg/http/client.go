@@ -13,13 +13,19 @@ import (
 // As of Go 1.20, there's no need to seed the global rand source
 var rnd = rand.New(rand.NewSource(time.Now().UnixNano()))
 
+// HTTPClient defines the interface for HTTP clients
+type HTTPClient interface {
+	Get(url string) ([]byte, error)
+	GetJSON(url string, v any) error
+}
+
 // Client is a wrapper around http.Client
 type Client struct {
 	client *http.Client
 }
 
 // NewClient creates a new Client
-func NewClient() *Client {
+func NewClient() HTTPClient {
 	return &Client{
 		client: &http.Client{
 			Timeout: 15 * time.Second, // Increased timeout
