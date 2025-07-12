@@ -75,6 +75,7 @@
                 "SOURCE_RedditPython_SUBSOURCE": "python",
                 "SOURCE_RedditPython_LIMIT": "3"
             },
+            "envFile": "${workspaceFolder}/.env",
             "args": []
         },
         {
