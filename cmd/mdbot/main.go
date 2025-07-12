@@ -58,4 +58,17 @@ func main() {
 	}
 
 	log.Printf("Successfully created markdown file: %s", filePath)
+
+	// Send Telegram message
+	telegramCfg, err := config.LoadTelegramConfig()
+	if err != nil {
+		log.Fatalf("Failed to load Telegram configuration: %v", err)
+	}
+
+	telegramService := services.NewTelegramService(telegramCfg.TelegramBotToken)
+	err = telegramService.SendMessage(markdownContent, telegramCfg.TelegramChatID, telegramCfg.TelegramThreadID, services.TELEGRAM_PARSE_MODE_MARKDOWN)
+	if err != nil {
+		log.Fatalf("Failed to send Telegram message: %v", err)
+	}
+	log.Println("Successfully sent Telegram message")
 }

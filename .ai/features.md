@@ -26,3 +26,17 @@
     1. [title](https://www.reddit.com/r/Python/comments/1310111/python_312_is_now_available/)
     2. [title](https://www.reddit.com/r/Python/comments/1310111/python_312_is_now_available/)
     ```
+
+## Integrate to Telegram
+
+1. Create environment variables for Telegram integration.
+2. The news titles will be collected and a Telegram message is sent each day, with the titles linked to the news. For example:
+
+    ```markdown
+    # <YYYY-MM-DD>
+
+    ## Hacker News
+
+    1. [title](https://news.ycombinator.com/item?id=37137555)
+    2. [title](https://news.ycombinator.com/item?id=37137555)
+    3. [title](https://news.ycombinator.com/item?id=37137555)

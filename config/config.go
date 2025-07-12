@@ -14,15 +14,26 @@ import (
 type Config struct {
 	// GithubToken is the GitHub token used to create issues
 	GithubToken string
-	
+
 	// GithubOwner is the owner of the GitHub repository
 	GithubOwner string
-	
+
 	// GithubRepo is the name of the GitHub repository
 	GithubRepo string
-	
+
 	// Sources is a list of news sources
 	Sources []models.Source
+}
+
+type TelegramConfig struct {
+	// TelegramBotToken is the Telegram bot token used to send messages
+	TelegramBotToken string
+
+	// TelegramChatID is the chat ID to send messages to
+	TelegramChatID int64
+
+	// TelegramThreadID is the thread ID to send messages to
+	TelegramThreadID int64
 }
 
 // LoadConfig loads the configuration from environment variables
@@ -103,5 +114,42 @@ func LoadConfig() (*Config, error) {
 		GithubOwner: githubOwner,
 		GithubRepo:  githubRepo,
 		Sources:     sources,
+	}, nil
+}
+
+func LoadTelegramConfig() (*TelegramConfig, error) {
+	// Load .env file if it exists
+	_ = godotenv.Load()
+
+	// Get Telegram configuration
+	telegramBotToken := os.Getenv("TELEGRAM_BOT_TOKEN")
+	if telegramBotToken == "" {
+		return nil, fmt.Errorf("TELEGRAM_BOT_TOKEN environment variable is required")
+	}
+
+	telegramChatIDStr := os.Getenv("TELEGRAM_CHAT_ID")
+	if telegramChatIDStr == "" {
+		return nil, fmt.Errorf("TELEGRAM_CHAT_ID environment variable is required")
+	}
+
+	telegramChatID, err := strconv.ParseInt(telegramChatIDStr, 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("invalid TELEGRAM_CHAT_ID: %v", err)
+	}
+
+	telegramThreadIDStr := os.Getenv("TELEGRAM_THREAD_ID")
+	if telegramThreadIDStr == "" {
+		return nil, fmt.Errorf("TELEGRAM_THREAD_ID environment variable is required")
+	}
+
+	telegramThreadID, err := strconv.ParseInt(telegramThreadIDStr, 10, 64)
+	if err != nil {
+		telegramThreadID = 0
+	}
+
+	return &TelegramConfig{
+		TelegramBotToken: telegramBotToken,
+		TelegramChatID:   telegramChatID,
+		TelegramThreadID: telegramThreadID,
 	}, nil
 }

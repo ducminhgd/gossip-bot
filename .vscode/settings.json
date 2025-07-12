@@ -12,7 +12,9 @@
     "go.formatFlags": [],
     "go.inferGopath": false,
     "go.testOnSave": false,
-    "go.testFlags": ["-v"],
+    "go.testFlags": [
+        "-v"
+    ],
     "go.testTimeout": "30s",
     "go.coverageDecorator": {
         "type": "highlight",
@@ -24,7 +26,7 @@
     "go.coverageOptions": "showBothCoveredAndUncoveredCode",
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-        "source.organizeImports": true
+        "source.organizeImports": "explicit"
     },
     "files.eol": "\n"
 }
