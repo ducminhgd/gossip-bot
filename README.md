@@ -39,6 +39,22 @@ For each source, the following environment variables are required:
 - `SOURCE_{NAME}_LIMIT`: Maximum number of news items to fetch (default: 10)
 - `SOURCE_{NAME}_SUBSOURCE`: Sub-source for sources like Reddit (e.g., subreddit name)
 
+### Reddit App Configuration (Optional)
+
+For better Reddit API access and higher rate limits, you can configure Reddit OAuth2 app credentials:
+
+- `REDDIT_APP_ID`: Reddit app ID (client ID) from your Reddit app
+- `REDDIT_APP_SECRET`: Reddit app secret (client secret) from your Reddit app
+
+To create a Reddit app:
+1. Go to https://www.reddit.com/prefs/apps
+2. Click "Create App" or "Create Another App"
+3. Choose "script" as the app type
+4. Use any URL for redirect URI (not used for script apps)
+5. Copy the app ID (under the app name) and secret
+
+If these credentials are not provided, the bot will fall back to unauthenticated requests, which have lower rate limits.
+
 ## Example Configuration
 
 ```env
@@ -57,6 +73,8 @@ SOURCE_RedditPython_TYPE=reddit
 SOURCE_RedditPython_URL=https://www.reddit.com
 SOURCE_RedditPython_SUBSOURCE=python
 SOURCE_RedditPython_LIMIT=5
+REDDIT_APP_ID=your_reddit_app_id
+REDDIT_APP_SECRET=your_reddit_app_secret
 ```
 
 ## Running Locally

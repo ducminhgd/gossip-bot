@@ -6,6 +6,8 @@ import (
 	"io"
 	"math/rand"
 	"net/http"
+	"net/url"
+	"strings"
 	"time"
 )
 
@@ -18,6 +20,7 @@ type HTTPClient interface {
 	Get(url string) ([]byte, error)
 	GetWithHeaders(url string, headers map[string]string) ([]byte, error)
 	GetJSON(url string, v any) error
+	PostForm(url string, data url.Values, headers map[string]string) ([]byte, error)
 }
 
 // Client is a wrapper around http.Client
@@ -111,4 +114,64 @@ func (c *Client) GetJSON(url string, v any) error {
 	}
 
 	return nil
+}
+
+// PostForm performs a POST request with form data and optional basic authentication
+func (c *Client) PostForm(url string, data url.Values, headers map[string]string) ([]byte, error) {
+	// Create request with form data
+	req, err := http.NewRequest(http.MethodPost, url, strings.NewReader(data.Encode()))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	// Set default headers
+	req.Header.Set("User-Agent", "GossipBot/1.0 (https://github.com/ducminhgd/gossip-bot; contact@example.com)")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	// Set custom headers (will override defaults if same key)
+	for key, value := range headers {
+		req.Header.Set(key, value)
+	}
+
+	// Perform request with retry logic
+	var resp *http.Response
+	var lastErr error
+	maxRetries := 3
+
+	for i := range maxRetries {
+		// Add a small delay between retries with some jitter
+		if i > 0 {
+			delay := time.Duration(500+rnd.Intn(500)) * time.Millisecond
+			time.Sleep(delay)
+		}
+
+		resp, err = c.client.Do(req)
+		if err != nil {
+			lastErr = fmt.Errorf("failed to perform request (attempt %d/%d): %w", i+1, maxRetries, err)
+			continue
+		}
+
+		// If we got a response, break out of the retry loop
+		break
+	}
+
+	// If all retries failed, return the last error
+	if resp == nil {
+		return nil, lastErr
+	}
+
+	defer resp.Body.Close()
+
+	// Check status code
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	}
+
+	// Read response body
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	return body, nil
 }

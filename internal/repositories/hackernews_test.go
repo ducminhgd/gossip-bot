@@ -3,6 +3,7 @@ package repositories
 import (
 	"errors"
 	"fmt"
+	"net/url"
 	"reflect"
 	"sort"
 	"testing"
@@ -31,6 +32,12 @@ func (m *MockHTTPClient) GetWithHeaders(url string, headers map[string]string) (
 // GetJSON is a mock implementation of the GetJSON method
 func (m *MockHTTPClient) GetJSON(url string, v any) error {
 	return m.GetJSONFunc(url, v)
+}
+
+// PostForm is a mock implementation of the PostForm method
+func (m *MockHTTPClient) PostForm(url string, data url.Values, headers map[string]string) ([]byte, error) {
+	// This method is not used directly in the hackernews tests
+	return nil, nil
 }
 
 // For testing, we'll modify the HackerNewsRepository struct to accept our mock

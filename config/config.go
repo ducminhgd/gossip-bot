@@ -36,6 +36,11 @@ type TelegramConfig struct {
 	TelegramThreadID int64
 }
 
+type RedditAppConfig struct {
+	AppID     string
+	AppSecret string
+}
+
 // LoadConfig loads the configuration from environment variables
 func LoadConfig() (*Config, error) {
 	// Load .env file if it exists
@@ -151,5 +156,26 @@ func LoadTelegramConfig() (*TelegramConfig, error) {
 		TelegramBotToken: telegramBotToken,
 		TelegramChatID:   telegramChatID,
 		TelegramThreadID: telegramThreadID,
+	}, nil
+}
+
+func LoadRedditAppConfig() (*RedditAppConfig, error) {
+	// Load .env file if it exists
+	_ = godotenv.Load()
+
+	// Get Reddit app configuration
+	redditAppID := os.Getenv("REDDIT_APP_ID")
+	if redditAppID == "" {
+		return nil, fmt.Errorf("REDDIT_APP_ID environment variable is required")
+	}
+
+	redditAppSecret := os.Getenv("REDDIT_APP_SECRET")
+	if redditAppSecret == "" {
+		return nil, fmt.Errorf("REDDIT_APP_SECRET environment variable is required")
+	}
+
+	return &RedditAppConfig{
+		AppID:     redditAppID,
+		AppSecret: redditAppSecret,
 	}, nil
 }

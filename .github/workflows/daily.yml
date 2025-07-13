@@ -48,4 +48,6 @@ jobs:
           TELEGRAM_BOT_TOKEN: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
           TELEGRAM_CHAT_ID: "${{ vars.TELEGRAM_CHAT_ID }}"
           TELEGRAM_THREAD_ID: "${{ vars.TELEGRAM_THREAD_ID }}"
+          REDDIT_APP_ID: "${{ vars.REDDIT_GOSSIP_APP_ID }}"
+          REDDIT_APP_SECRET: "${{ secrets.REDDIT_GOSSIP_SECRET }}"
         run: ./ghbot

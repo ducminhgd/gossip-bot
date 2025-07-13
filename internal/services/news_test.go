@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"errors"
+	"net/url"
 	"reflect"
 	"testing"
 	"time"
@@ -15,6 +16,7 @@ type MockHTTPClient struct {
 	GetJSONFunc        func(url string, v any) error
 	GetFunc            func(url string) ([]byte, error)
 	GetWithHeadersFunc func(url string, headers map[string]string) ([]byte, error)
+	PostFormFunc       func(url string, data url.Values, headers map[string]string) ([]byte, error)
 }
 
 // Get is a mock implementation of the Get method
@@ -39,6 +41,14 @@ func (m *MockHTTPClient) GetJSON(url string, v any) error {
 		return m.GetJSONFunc(url, v)
 	}
 	return errors.New("GetJSONFunc not implemented")
+}
+
+// PostForm is a mock implementation of the PostForm method
+func (m *MockHTTPClient) PostForm(url string, data url.Values, headers map[string]string) ([]byte, error) {
+	if m.PostFormFunc != nil {
+		return m.PostFormFunc(url, data, headers)
+	}
+	return nil, errors.New("PostFormFunc not implemented")
 }
 
 // TestNewNewsService tests the NewNewsService function
