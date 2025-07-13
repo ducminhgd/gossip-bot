@@ -22,6 +22,12 @@ func (m *MockHTTPClient) Get(url string) ([]byte, error) {
 	return nil, nil
 }
 
+// GetWithHeaders is a mock implementation of the GetWithHeaders method
+func (m *MockHTTPClient) GetWithHeaders(url string, headers map[string]string) ([]byte, error) {
+	// This method is not used directly in the tests
+	return nil, nil
+}
+
 // GetJSON is a mock implementation of the GetJSON method
 func (m *MockHTTPClient) GetJSON(url string, v any) error {
 	return m.GetJSONFunc(url, v)

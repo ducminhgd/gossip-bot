@@ -139,13 +139,17 @@ func (s *NewsService) fetchReddit(source models.Source) ([]models.News, error) {
 
 	redditURL := fmt.Sprintf("%s/r/%s/hot.json?limit=%d", source.URL, url.PathEscape(subreddit), source.Limit)
 
-	// Fetch data
-	body, err := s.httpClient.Get(redditURL)
+	// Fetch data with custom User-Agent header
+	headers := map[string]string{
+		"User-Agent": "myredditbot/0.1 by u/ducminhgd",
+	}
+	body, err := s.httpClient.GetWithHeaders(redditURL, headers)
 	if err != nil {
 		// If we get a 403 Forbidden error, it's likely due to Reddit's API restrictions
 		// This is common in CI/CD environments like GitHub Actions
 		if strings.Contains(err.Error(), "403") {
-			return nil, fmt.Errorf("Reddit API access forbidden (403) - this is common in CI/CD environments: %w", err)
+			fmt.Println(body)
+			return nil, fmt.Errorf("reddit API access forbidden (403) - this is common in CI/CD environments: %w", err)
 		}
 		return nil, fmt.Errorf("failed to fetch Reddit data: %w", err)
 	}

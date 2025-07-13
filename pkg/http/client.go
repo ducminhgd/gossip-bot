@@ -16,6 +16,7 @@ var rnd = rand.New(rand.NewSource(time.Now().UnixNano()))
 // HTTPClient defines the interface for HTTP clients
 type HTTPClient interface {
 	Get(url string) ([]byte, error)
+	GetWithHeaders(url string, headers map[string]string) ([]byte, error)
 	GetJSON(url string, v any) error
 }
 
@@ -35,18 +36,25 @@ func NewClient() HTTPClient {
 
 // Get performs a GET request to the specified URL
 func (c *Client) Get(url string) ([]byte, error) {
+	return c.GetWithHeaders(url, nil)
+}
+
+// GetWithHeaders performs a GET request to the specified URL with custom headers
+func (c *Client) GetWithHeaders(url string, headers map[string]string) ([]byte, error) {
 	// Create request
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 
-	// Set a more detailed User-Agent to avoid being blocked by Reddit
-	// Reddit requires a good User-Agent header: https://github.com/reddit-archive/reddit/wiki/API
+	// Set default headers
 	req.Header.Set("User-Agent", "GossipBot/1.0 (https://github.com/ducminhgd/gossip-bot; contact@example.com)")
-
-	// Add Accept header
 	req.Header.Set("Accept", "application/json")
+
+	// Set custom headers (will override defaults if same key)
+	for key, value := range headers {
+		req.Header.Set(key, value)
+	}
 
 	// Perform request with retry logic
 	var resp *http.Response

@@ -12,8 +12,9 @@ import (
 
 // MockHTTPClient is a mock implementation of the HTTP client for testing
 type MockHTTPClient struct {
-	GetJSONFunc func(url string, v any) error
-	GetFunc     func(url string) ([]byte, error)
+	GetJSONFunc        func(url string, v any) error
+	GetFunc            func(url string) ([]byte, error)
+	GetWithHeadersFunc func(url string, headers map[string]string) ([]byte, error)
 }
 
 // Get is a mock implementation of the Get method
@@ -22,6 +23,14 @@ func (m *MockHTTPClient) Get(url string) ([]byte, error) {
 		return m.GetFunc(url)
 	}
 	return nil, errors.New("GetFunc not implemented")
+}
+
+// GetWithHeaders is a mock implementation of the GetWithHeaders method
+func (m *MockHTTPClient) GetWithHeaders(url string, headers map[string]string) ([]byte, error) {
+	if m.GetWithHeadersFunc != nil {
+		return m.GetWithHeadersFunc(url, headers)
+	}
+	return nil, errors.New("GetWithHeadersFunc not implemented")
 }
 
 // GetJSON is a mock implementation of the GetJSON method
@@ -106,8 +115,13 @@ func TestFetchAllNews_Success(t *testing.T) {
 			}
 			return errors.New("unexpected URL")
 		},
-		GetFunc: func(url string) ([]byte, error) {
+		GetWithHeadersFunc: func(url string, headers map[string]string) ([]byte, error) {
 			if url == "https://www.reddit.com/r/golang/hot.json?limit=1" {
+				// Verify the User-Agent header is set correctly
+				if userAgent, ok := headers["User-Agent"]; !ok || userAgent != "myredditbot/0.1 by u/ducminhgd" {
+					return nil, errors.New("expected User-Agent header 'myredditbot/0.1 by u/ducminhgd'")
+				}
+
 				// Mock the Reddit response
 				response := struct {
 					Data struct {
