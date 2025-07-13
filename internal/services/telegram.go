@@ -7,8 +7,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"strconv"
-	"strings"
 )
 
 const (
@@ -44,10 +42,15 @@ func (s *TelegramService) SendMessage(message string, chat_id int64, thread_id i
 	if err != nil {
 		log.Fatalf("Failed to marshal body: %v", err)
 	}
-	fmt.Println(strings.Replace(string(jsonBody), strconv.Itoa(int(chat_id)), "<chat_id>", 1))
-	fmt.Println(strings.Replace(string(jsonBody), strconv.Itoa(int(thread_id)), "<thread_id>", 1))
 
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonBody))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonBody))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("User-Agent", "GossipBot/1.0 (https://github.com/ducminhgd/gossip-bot)")
+
+	resp, err := s.httpClient.Do(req)
 	if err != nil {
 		b, _ := io.ReadAll(resp.Body)
 		fmt.Printf("send Telegram failed: %s\n", string(b))
