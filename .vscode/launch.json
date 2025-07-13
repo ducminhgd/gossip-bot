@@ -62,7 +62,7 @@
                 "GITHUB_TOKEN": "your_github_token",
                 "GITHUB_OWNER": "your_github_username",
                 "GITHUB_REPO": "your_github_repo",
-                "SOURCES": "HackerNews,RedditGo,RedditPython",
+                "SOURCES": "HackerNews,RedditGo,RedditPython,RedditDatabase",
                 "SOURCE_HackerNews_TYPE": "hackernews",
                 "SOURCE_HackerNews_URL": "https://hacker-news.firebaseio.com/v0",
                 "SOURCE_HackerNews_LIMIT": "5",
@@ -73,7 +73,11 @@
                 "SOURCE_RedditPython_TYPE": "reddit",
                 "SOURCE_RedditPython_URL": "https://www.reddit.com",
                 "SOURCE_RedditPython_SUBSOURCE": "python",
-                "SOURCE_RedditPython_LIMIT": "3"
+                "SOURCE_RedditPython_LIMIT": "3",
+                "SOURCE_RedditDatabase_TYPE": "reddit",
+                "SOURCE_RedditDatabase_URL": "https://www.reddit.com",
+                "SOURCE_RedditDatabase_SUBSOURCE": "Database",
+                "SOURCE_RedditDatabase_LIMIT": "3"
             },
             "envFile": "${workspaceFolder}/.env",
             "args": []

@@ -29,7 +29,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GOSSIP_GITHUB_TOKEN }}
           GITHUB_OWNER: ${{ github.repository_owner }}
           GITHUB_REPO: ${{ github.event.repository.name }}
-          SOURCES: "HackerNews,RedditGo,RedditPython"
+          SOURCES: "HackerNews,RedditGo,RedditPython,RedditDatabase"
           SOURCE_HackerNews_TYPE: "hackernews"
           SOURCE_HackerNews_URL: "https://hacker-news.firebaseio.com/v0"
           SOURCE_HackerNews_LIMIT: "10"
@@ -41,6 +41,10 @@ jobs:
           SOURCE_RedditPython_URL: "https://www.reddit.com"
           SOURCE_RedditPython_SUBSOURCE: "python"
           SOURCE_RedditPython_LIMIT: "10"
+          SOURCE_RedditDatabase_TYPE: "reddit"
+          SOURCE_RedditDatabase_URL: "https://www.reddit.com"
+          SOURCE_RedditDatabase_SUBSOURCE: "Database"
+          SOURCE_RedditDatabase_LIMIT: "10"
           TELEGRAM_BOT_TOKEN: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
           TELEGRAM_CHAT_ID: "${{ vars.TELEGRAM_CHAT_ID }}"
           TELEGRAM_THREAD_ID: "${{ vars.TELEGRAM_THREAD_ID }}"
