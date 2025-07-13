@@ -11,6 +11,7 @@ import (
 
 	"github.com/ducminhgd/gossip-bot/config"
 	"github.com/ducminhgd/gossip-bot/internal/models"
+	"github.com/ducminhgd/gossip-bot/internal/repositories"
 	"github.com/ducminhgd/gossip-bot/pkg/http"
 )
 
@@ -19,6 +20,7 @@ type NewsService struct {
 	httpClient      http.HTTPClient
 	sources         []models.Source
 	redditAppConfig *config.RedditAppConfig
+	infoqRepo       *repositories.InfoQRepository
 }
 
 // NewNewsService creates a new NewsService
@@ -35,6 +37,7 @@ func NewNewsService(sources []models.Source) *NewsService {
 		httpClient:      http.NewClient(),
 		sources:         sources,
 		redditAppConfig: redditConfig,
+		infoqRepo:       repositories.NewInfoQRepository(),
 	}
 }
 
@@ -70,6 +73,8 @@ func (s *NewsService) FetchNewsBySource(source models.Source) ([]models.News, er
 		return s.fetchHackerNews(source)
 	case "reddit":
 		return s.fetchReddit(source)
+	case "infoq":
+		return s.infoqRepo.FetchArticles(source)
 	default:
 		return nil, fmt.Errorf("unsupported source type: %s", source.Type)
 	}

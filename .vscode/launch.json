@@ -66,7 +66,7 @@
                 "GITHUB_TOKEN": "your_github_token",
                 "GITHUB_OWNER": "your_github_username",
                 "GITHUB_REPO": "your_github_repo",
-                "SOURCES": "HackerNews,RedditGo,RedditPython,RedditDatabase",
+                "SOURCES": "HackerNews,RedditGo,RedditPython,RedditDatabase,InfoQ",
                 "SOURCE_HackerNews_TYPE": "hackernews",
                 "SOURCE_HackerNews_URL": "https://hacker-news.firebaseio.com/v0",
                 "SOURCE_HackerNews_LIMIT": "5",
@@ -82,6 +82,9 @@
                 "SOURCE_RedditDatabase_URL": "https://www.reddit.com",
                 "SOURCE_RedditDatabase_SUBSOURCE": "Database",
                 "SOURCE_RedditDatabase_LIMIT": "3",
+                "SOURCE_InfoQ_TYPE": "InfoQ",
+                "SOURCE_InfoQ_URL": "https://feed.infoq.com",
+                "SOURCE_InfoQ_LIMIT": "3",
                 "REDDIT_APP_ID": "your_reddit_app_id",
                 "REDDIT_APP_SECRET": "your_reddit_app_secret"
             },
