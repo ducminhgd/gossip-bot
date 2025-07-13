@@ -59,7 +59,8 @@ func main() {
 	telegramService := services.NewTelegramService(telegramCfg.TelegramBotToken)
 	err = telegramService.SendMessage(issueContent, telegramCfg.TelegramChatID, telegramCfg.TelegramThreadID, services.TELEGRAM_PARSE_MODE_MARKDOWN)
 	if err != nil {
-		log.Fatalf("Failed to send Telegram message: %v", err)
+		log.Printf("Failed to send Telegram message: %v", err)
+	} else {
+		log.Println("Successfully sent Telegram message")
 	}
-	log.Println("Successfully sent Telegram message")
 }

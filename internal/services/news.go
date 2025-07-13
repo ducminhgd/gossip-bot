@@ -148,7 +148,6 @@ func (s *NewsService) fetchReddit(source models.Source) ([]models.News, error) {
 		// If we get a 403 Forbidden error, it's likely due to Reddit's API restrictions
 		// This is common in CI/CD environments like GitHub Actions
 		if strings.Contains(err.Error(), "403") {
-			fmt.Println(body)
 			return nil, fmt.Errorf("reddit API access forbidden (403) - this is common in CI/CD environments: %w", err)
 		}
 		return nil, fmt.Errorf("failed to fetch Reddit data: %w", err)
