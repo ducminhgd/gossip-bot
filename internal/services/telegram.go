@@ -12,8 +12,9 @@ import (
 const (
 	TELEGRAM_SEND_MESSAGE_URL_PATTERN = "https://api.telegram.org/bot%s/sendMessage"
 
-	TELEGRAM_PARSE_MODE_DEFAULT  = "Markdown"
-	TELEGRAM_PARSE_MODE_MARKDOWN = "Markdown"
+	TELEGRAM_PARSE_MODE_DEFAULT    = "Markdown"
+	TELEGRAM_PARSE_MODE_MARKDOWN   = "Markdown"
+	TELEGRAM_PARSE_MODE_MARKDOWNV2 = "MarkdownV2"
 )
 
 type TelegramService struct {

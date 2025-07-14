@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -49,7 +50,8 @@ func main() {
 
 	// Create markdown file
 	now := time.Now().UTC()
-	filename := now.Format("2006-01-02") + ".md"
+	today := now.Format("2006-01-02")
+	filename := today + ".md"
 	filePath := filepath.Join(newsDir, filename)
 
 	log.Printf("Creating markdown file: %s", filePath)
@@ -66,9 +68,18 @@ func main() {
 	}
 
 	telegramService := services.NewTelegramService(telegramCfg.TelegramBotToken)
-	err = telegramService.SendMessage(markdownContent, telegramCfg.TelegramChatID, telegramCfg.TelegramThreadID, services.TELEGRAM_PARSE_MODE_MARKDOWN)
-	if err != nil {
-		log.Fatalf("Failed to send Telegram message: %v", err)
+	for source, newsList := range newsMap {
+		if len(newsList) == 0 {
+			continue
+		}
+		telegramContent := fmt.Sprintf("__**[%s] %s**__\n\n", today, source)
+
+		// Add news items - only titles, no descriptions
+		for i, news := range newsList {
+			telegramContent += fmt.Sprintf("%d. [%s](%s)\n", i+1, news.Title, news.URL)
+		}
+
+		telegramContent += "\n"
+		_ = telegramService.SendMessage(telegramContent, telegramCfg.TelegramChatID, telegramCfg.TelegramThreadID, services.TELEGRAM_PARSE_MODE_MARKDOWNV2)
 	}
-	log.Println("Successfully sent Telegram message")
 }

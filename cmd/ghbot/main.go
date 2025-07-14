@@ -40,7 +40,8 @@ func main() {
 
 	// Create issue
 	now := time.Now().UTC()
-	issueTitle := fmt.Sprintf("Daily News Digest - %s", now.Format("2006-01-02"))
+	today := now.Format("2006-01-02")
+	issueTitle := fmt.Sprintf("Daily News Digest - %s", today)
 
 	log.Printf("Creating GitHub issue: %s", issueTitle)
 	issue, err := githubService.CreateIssue(issueTitle, issueContent)
@@ -57,10 +58,18 @@ func main() {
 	}
 
 	telegramService := services.NewTelegramService(telegramCfg.TelegramBotToken)
-	err = telegramService.SendMessage(issueContent, telegramCfg.TelegramChatID, telegramCfg.TelegramThreadID, services.TELEGRAM_PARSE_MODE_MARKDOWN)
-	if err != nil {
-		log.Printf("Failed to send Telegram message: %v", err)
-	} else {
-		log.Println("Successfully sent Telegram message")
+	for source, newsList := range newsMap {
+		if len(newsList) == 0 {
+			continue
+		}
+		telegramContent := fmt.Sprintf("__**[%s] %s**__\n\n", today, source)
+
+		// Add news items - only titles, no descriptions
+		for i, news := range newsList {
+			telegramContent += fmt.Sprintf("%d. [%s](%s)\n", i+1, news.Title, news.URL)
+		}
+
+		telegramContent += "\n"
+		_ = telegramService.SendMessage(telegramContent, telegramCfg.TelegramChatID, telegramCfg.TelegramThreadID, services.TELEGRAM_PARSE_MODE_MARKDOWNV2)
 	}
 }
