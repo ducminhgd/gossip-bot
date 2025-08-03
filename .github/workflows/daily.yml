@@ -29,10 +29,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GOSSIP_GITHUB_TOKEN }}
           GITHUB_OWNER: ${{ github.repository_owner }}
           GITHUB_REPO: ${{ github.event.repository.name }}
-          SOURCES: "HackerNews,RedditGo,RedditPython,RedditDatabase,InfoQ"
+          SOURCES: "HackerNews,RedditGo,RedditPython,RedditDatabase,InfoQ,RedditSoftwareArchitecture"
           SOURCE_HackerNews_TYPE: "hackernews"
           SOURCE_HackerNews_URL: "https://hacker-news.firebaseio.com/v0"
           SOURCE_HackerNews_LIMIT: "10"
+          SOURCE_RedditSoftwareArchitecture_TYPE: "reddit"
+          SOURCE_RedditSoftwareArchitecture_URL: "https://www.reddit.com"
+          SOURCE_RedditSoftwareArchitecture_SUBSOURCE: "softwarearchitecture"
+          SOURCE_RedditSoftwareArchitecture_LIMIT: "10"
           SOURCE_RedditGo_TYPE: "reddit"
           SOURCE_RedditGo_URL: "https://www.reddit.com"
           SOURCE_RedditGo_SUBSOURCE: "golang"
