@@ -29,7 +29,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GOSSIP_GITHUB_TOKEN }}
           GITHUB_OWNER: ${{ github.repository_owner }}
           GITHUB_REPO: ${{ github.event.repository.name }}
-          SOURCES: "HackerNews,RedditGo,RedditPython,RedditDatabase,InfoQ,RedditSoftwareArchitecture"
+          SOURCES: "HackerNews,RedditGo,RedditPython,RedditDatabase,RedditSec,RedditCySec,RedditAI,InfoQ,RedditSoftwareArchitecture"
           SOURCE_HackerNews_TYPE: "hackernews"
           SOURCE_HackerNews_URL: "https://hacker-news.firebaseio.com/v0"
           SOURCE_HackerNews_LIMIT: "10"
@@ -49,6 +49,18 @@ jobs:
           SOURCE_RedditDatabase_URL: "https://www.reddit.com"
           SOURCE_RedditDatabase_SUBSOURCE: "Database"
           SOURCE_RedditDatabase_LIMIT: "10"
+          SOURCE_RedditSec_TYPE: "reddit"
+          SOURCE_RedditSec_URL: "https://www.reddit.com"
+          SOURCE_RedditSec_SUBSOURCE: "security"
+          SOURCE_RedditSec_LIMIT: "10"
+          SOURCE_RedditCySec_TYPE: "reddit"
+          SOURCE_RedditCySec_URL: "https://www.reddit.com"
+          SOURCE_RedditCySec_SUBSOURCE: "cybersecurity"
+          SOURCE_RedditCySec_LIMIT: "10"
+          SOURCE_RedditAI_TYPE: "reddit"
+          SOURCE_RedditAI_URL: "https://www.reddit.com"
+          SOURCE_RedditAI_SUBSOURCE: "artificial"
+          SOURCE_RedditAI_LIMIT: "10"
           SOURCE_InfoQ_TYPE: "InfoQ"
           SOURCE_InfoQ_URL: "https://feed.infoq.com"
           SOURCE_InfoQ_LIMIT: "10"
